@@ -16,24 +16,30 @@ if not API_KEY:
 # 設定 Gemini API
 genai.configure(api_key=API_KEY)
 # 嘗試幾種不同的模型名稱，避免 404 錯誤
-model_names = ['gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-3.1-pro-preview']
-model = None
+# 優先使用的進階模型清單
+model_names = [
+    'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest',
+    'gemini-3.5-flash', 'gemini-3.1-pro-preview', 'gemini-pro-latest',
+    'gemini-2.5-flash-lite', 'gemini-3-pro-preview', 'gemini-3-flash-preview',
+    'gemini-3.1-flash-lite'
+]
+models_pool = []
+current_model_idx = 0
 
 print("正在偵測可用的 API 模型...")
 available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-print(f"你的 API Key 支援的模型: {available_models}")
+print(f"你的 API Key 支援的模型數量: {len(available_models)}")
 
 for name in model_names:
     full_name = f"models/{name}" if not name.startswith("models/") else name
     if any(m.endswith(name) for m in available_models):
-        print(f"[*] 選擇使用模型: {name}")
-        model = genai.GenerativeModel(name)
-        break
+        print(f"[*] 加入可用模型池: {name}")
+        models_pool.append(genai.GenerativeModel(name))
 
-if not model:
+if not models_pool:
     fallback = 'gemini-flash-latest'
     print(f"[!] 找不到偏好的模型，嘗試強制使用 {fallback}")
-    model = genai.GenerativeModel(fallback)
+    models_pool.append(genai.GenerativeModel(fallback))
 
 BASE_DIR = r"E:\2026andigravity2"
 OUTPUT_DIR = os.path.join(BASE_DIR, "41-存skill")
@@ -144,17 +150,24 @@ def extract_skill_name(content, file_path):
     return os.path.basename(os.path.dirname(file_path))
 
 def generate_docsify_content(skill_content):
+    global current_model_idx
     prompt = prompt_template.format(content=skill_content)
     while True:
+        model = models_pool[current_model_idx]
         try:
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
             error_msg = str(e)
-            print(f"API 呼叫失敗: {error_msg}")
+            print(f"API 呼叫失敗 ({model.model_name}): {error_msg}")
             if "429" in error_msg:
-                print("[!] 觸發 API 頻率限制 (Rate Limit)，暫停 60 秒後自動重試...")
-                time.sleep(60)
+                current_model_idx += 1
+                if current_model_idx >= len(models_pool):
+                    print("[!] 所有模型的配額皆已用盡，暫停 60 秒後重試第一個模型...")
+                    time.sleep(60)
+                    current_model_idx = 0
+                else:
+                    print(f"[*] 觸發頻率限制，自動切換至下一個模型: {models_pool[current_model_idx].model_name}")
             else:
                 return None
 
