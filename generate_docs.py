@@ -44,7 +44,7 @@ if not models_pool:
 BASE_DIR = r"E:\2026andigravity2"
 OUTPUT_DIR = os.path.join(BASE_DIR, "41-存skill")
 DOCS_DIR = os.path.join(OUTPUT_DIR, "docs")
-SIDEBAR_FILE = os.path.join(OUTPUT_DIR, "_sidebar.md")
+SIDEBAR_FILE = os.path.join(OUTPUT_DIR, "sidebar.md")
 INDEX_FILE = os.path.join(OUTPUT_DIR, "README.md")
 
 # 要排除的目錄
