@@ -31,3 +31,4 @@
   * [Hyperframes 影片生成器 (hyperframes-video-generator)](docs/hyperframes-video-generator.md)
   * [YouTube 財經與知識分析助手 (YouTube Finance & Knowledge Analyzer)](docs/youtube-finance-analyzer.md)
   * [地緣政治戰略分析 (Geopolitical Strategy Analyst Watcher)](docs/GeopoliticalStrategyAnalystWatcher.md)
+* [即時外部讀取測試 (External Fetch Demo)](https://raw.githubusercontent.com/fuyoung205122/antigravity-skills/main/README.md)
