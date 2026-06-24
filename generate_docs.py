@@ -180,6 +180,31 @@ def extract_quick_lookup(generated_text):
         return "\n".join(lines)
     return ""
 
+def extract_display_name(generated_text, default_name):
+    match = re.search(r'# Skill 名稱\s*\n+([^#\n]+)', generated_text)
+    if match:
+        title = match.group(1).strip().replace('*', '').strip()
+        if title:
+            m = re.match(r'^(.*?)\s*[\(（](.*?)[\)）]$', title)
+            
+            def has_chinese(s):
+                return any('\u4e00' <= c <= '\u9fff' for c in s)
+                
+            if m:
+                part1, part2 = m.group(1).strip(), m.group(2).strip()
+                if has_chinese(part1) and not has_chinese(part2):
+                    return f"{part1} ({part2})"
+                elif has_chinese(part2) and not has_chinese(part1):
+                    return f"{part2} ({part1})"
+                else:
+                    return f"{part1} ({part2})"
+            
+            if title.lower() != default_name.lower():
+                if has_chinese(title):
+                    return f"{title} ({default_name})"
+            return title
+    return default_name
+
 def main():
     if not os.path.exists(DOCS_DIR):
         os.makedirs(DOCS_DIR)
@@ -209,7 +234,8 @@ def main():
                 print(f"  > [*] 已經存在，跳過轉換: {skill_name}")
                 with open(output_path, 'r', encoding='utf-8') as f:
                     generated_text = f.read()
-                sidebar_items.append(f"* [{skill_name}](docs/{safe_filename}.md)")
+                display_name = extract_display_name(generated_text, skill_name)
+                sidebar_items.append(f"* [{display_name}](docs/{safe_filename}.md)")
                 continue
 
             print(f"  > Skill 名稱: {skill_name}")
@@ -232,7 +258,8 @@ def main():
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(main_content)
                 
-            sidebar_items.append(f"* [{skill_name}](docs/{safe_filename}.md)")
+            display_name = extract_display_name(generated_text, skill_name)
+            sidebar_items.append(f"* [{display_name}](docs/{safe_filename}.md)")
             
             # 每次成功呼叫後固定等待 5 秒，避免快速觸發限制
             time.sleep(5)
