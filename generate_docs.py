@@ -214,6 +214,7 @@ def main():
     
     sidebar_items = []
     quick_lookups = []
+    valid_doc_files = set()
     
     for idx, filepath in enumerate(skill_files):
         print(f"[{idx+1}/{len(skill_files)}] 正在處理: {filepath}")
@@ -236,6 +237,7 @@ def main():
                     generated_text = f.read()
                 display_name = extract_display_name(generated_text, skill_name)
                 sidebar_items.append(f"* [{display_name}](docs/{safe_filename}.md)")
+                valid_doc_files.add(f"{safe_filename}.md")
                 continue
 
             print(f"  > Skill 名稱: {skill_name}")
@@ -260,6 +262,7 @@ def main():
                 
             display_name = extract_display_name(generated_text, skill_name)
             sidebar_items.append(f"* [{display_name}](docs/{safe_filename}.md)")
+            valid_doc_files.add(f"{safe_filename}.md")
             
             # 每次成功呼叫後固定等待 5 秒，避免快速觸發限制
             time.sleep(5)
@@ -267,6 +270,17 @@ def main():
         except Exception as e:
             print(f"  > 處理失敗: {e}")
             
+    # 清理已經不存在的 skill 文件
+    print("正在清理已刪除的 Skill 文件...")
+    for filename in os.listdir(DOCS_DIR):
+        if filename.endswith(".md") and filename not in valid_doc_files:
+            file_to_remove = os.path.join(DOCS_DIR, filename)
+            try:
+                os.remove(file_to_remove)
+                print(f"  > [-] 已刪除過期的文件: {filename}")
+            except Exception as e:
+                print(f"  > 無法刪除文件 {filename}: {e}")
+                
     # 更新 _sidebar.md
     print("正在更新 _sidebar.md...")
     sidebar_content = "<!-- sidebar -->\n* [首頁](/)\n* Skills\n"
