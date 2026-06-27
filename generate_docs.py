@@ -281,11 +281,27 @@ def main():
             except Exception as e:
                 print(f"  > 無法刪除文件 {filename}: {e}")
                 
-    # 更新 _sidebar.md
-    print("正在更新 _sidebar.md...")
+    # 更新 sidebar.md
+    print("正在更新 sidebar.md...")
+    
+    # 讀取現有的 sidebar.md 內容，保留外部連結
+    existing_external_links = []
+    if os.path.exists(SIDEBAR_FILE):
+        with open(SIDEBAR_FILE, 'r', encoding='utf-8') as f:
+            for line in f:
+                if 'http://' in line or 'https://' in line:
+                    existing_external_links.append(line.rstrip('\n'))
+
     sidebar_content = "<!-- sidebar -->\n* [首頁](/)\n* Skills\n"
-    for item in sidebar_items:
+    
+    # 處理重複項目 (利用 dict.fromkeys 保持順序並去重)
+    unique_items = list(dict.fromkeys(sidebar_items))
+    for item in unique_items:
         sidebar_content += f"  {item}\n"
+        
+    # 補回外部連結
+    for ext_link in existing_external_links:
+        sidebar_content += f"{ext_link}\n"
         
     with open(SIDEBAR_FILE, 'w', encoding='utf-8') as f:
         f.write(sidebar_content)
@@ -294,7 +310,8 @@ def main():
     print("正在更新 README.md...")
     readme_content = "# Antigravity Skills Documentation\n\n歡迎來到 Skill 說明書網站！\n\n## 一句話速查版\n\n"
     if quick_lookups:
-        for ql in quick_lookups:
+        unique_qls = list(dict.fromkeys(quick_lookups))
+        for ql in unique_qls:
             readme_content += f"{ql}\n"
     else:
         readme_content += "目前尚未產生速查資料。\n"

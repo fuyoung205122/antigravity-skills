@@ -1,5 +1,12 @@
 # 變更紀錄 (Changelog)
 
+## [2026-06-26]
+### Added
+- 為 `generate_docs.py` 腳本新增自動清理功能。當腳本執行完畢時，會自動比對並刪除 `docs/` 資料夾中已經沒有對應實體 Skill 的 Markdown 殘留文件。
+
+### Documented
+- 釐清並確定了 GitHub Pages 的發布機制：確認 `E:\2026andigravity2\41-存skill` 是綁定 `antigravity-skills` 的本地倉庫，發布更新只需在該目錄下執行標準的 `git add .`, `git commit`, `git push origin main` 指令，而非依賴跨倉庫自動同步。
+
 ## [2026-06-25]
 ### Added
 - 建立 `progress.md`，統整專案目前階段、已完成進度與待處理項目。
