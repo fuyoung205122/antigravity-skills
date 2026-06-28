@@ -20,5 +20,6 @@
 - [ ] 加入搜尋功能 (Search Plugin)
 
 ## 最近更新紀錄 (Recent Updates)
+- [2026-06-27] 專案交接：修復 `generate_docs.py` 導致的 `sidebar.md` 項目重複與外部連結覆寫的重大 Bug，並將乾淨的目錄推播至 GitHub Pages 發布。完成收工。
 - [2026-06-26] 專案交接：釐清 GitHub Pages (`antigravity-skills`) 與本地倉庫的同步關係，確認需以手動 `git push` 更新。修改 `generate_docs.py` 腳本，加入刪除過期 `.md` 檔案的自動清理機制。完成收工。
 - [2026-06-25] 專案交接：發現 `generate_docs.py` 的覆寫風險。完成 `HANDOVER.md` 等多份交接文件編寫。

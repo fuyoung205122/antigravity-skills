@@ -1,5 +1,12 @@
 # 變更紀錄 (Changelog)
 
+## [2026-06-27]
+### Fixed
+- 修復 `generate_docs.py` 中 `sidebar_items` 重複產生的問題。現在腳本會利用 `dict.fromkeys` 自動去除重複的 Skill 項目。
+- 修復 `generate_docs.py` 會將 `sidebar.md` 內手動添加的外部連結覆寫洗掉的問題。現在寫入前會預先讀取並保留 `http://` 與 `https://` 的外部連結。
+
+### Deployed
+- 將乾淨且正確的 `sidebar.md` 推播至 GitHub Pages。
 ## [2026-06-26]
 ### Added
 - 為 `generate_docs.py` 腳本新增自動清理功能。當腳本執行完畢時，會自動比對並刪除 `docs/` 資料夾中已經沒有對應實體 Skill 的 Markdown 殘留文件。
